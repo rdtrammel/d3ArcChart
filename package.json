@@ -1,0 +1,25 @@
+{
+  "name": "d3-arc-chart",
+  "version": "1.0.0",
+  "description": "Just a simple base arc chart using the d3 library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rdtrammel/d3ArcChart.git"
+  },
+  "keywords": [
+    "d3"
+  ],
+  "author": "Robert D Trammel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rdtrammel/d3ArcChart/issues"
+  },
+  "homepage": "https://github.com/rdtrammel/d3ArcChart#readme",
+  "dependencies": {
+    "d3": "^5.16.0"
+  }
+}
