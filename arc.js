@@ -1,7 +1,7 @@
 function ArcChart(targetEl, opts) {
     return {
         targetEl: targetEl || document.body,
-        data : opts.data || {},
+        data: opts.data || {},
         margin: {
             top: opts.marginTop || 20,
             right: opts.marginRight || 30,
@@ -10,29 +10,35 @@ function ArcChart(targetEl, opts) {
         },
         width: opts.width || 450,
         height: opts.height || 300,
-        stroke : {
+        stroke: {
             color: opts.strokeColor || "black",
             weight: opts.strokeWeight || 1
         },
         render: function () {
             // append the svg object to the body of the page
-            var svg = d3.select(targetEl)
+            var svg = d3.select("#my_dataviz")
                 .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
                 .append("g")
-                .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+                .attr("transform",
+                    "translate(" + this.margin.left + "," + this.margin.top + ")");
+
+            // Read dummy data
+            var data = this.data;
 
             // List of node names
-            var allNodes = this.data.nodes.map(function (d) { return d.name });
+            var allNodes = this.data.nodes.map(function (d) {
+                return d.name
+            });
 
-            // A linear scale to position the nodes on the X axisnod
+            // A linear scale to position the nodes on the X axis
             var x = d3.scalePoint()
                 .range([0, this.width])
                 .domain(allNodes)
 
             // Add the circle for the nodes
-            svg
+            var nodes = svg
                 .selectAll("mynodes")
                 .data(this.data.nodes)
                 .enter()
@@ -45,7 +51,7 @@ function ArcChart(targetEl, opts) {
                 .style("fill", "#69b3a2")
 
             // And give them a label
-            svg
+            var labels = svg
                 .selectAll("mylabels")
                 .data(this.data.nodes)
                 .enter()
@@ -63,13 +69,13 @@ function ArcChart(targetEl, opts) {
             // In my input data, links are provided between nodes -id-, NOT between node names.
             // So I have to do a link between this id and the name
             var idToNode = {};
-            this.data.nodes.forEach(function (n) {
+            data.nodes.forEach(function (n) {
                 idToNode[n.id] = n;
             });
             // Cool, now if I do idToNode["2"].name I've got the name of the node with id 2
 
             // Add the links
-            svg
+            var links = svg
                 .selectAll('mylinks')
                 .data(this.data.links)
                 .enter()
@@ -77,16 +83,48 @@ function ArcChart(targetEl, opts) {
                 .attr('d', function (d) {
                     start = x(idToNode[d.source].name) // X position of start node on the X axis
                     end = x(idToNode[d.target].name) // X position of end node
-                    return ['M', start, this.height - 30, // the arc starts at the coordinate x=start, y=height-30 (where the starting node is)
+                    return ['M', start, this.height - this.margin.top, // the arc starts at the coordinate x=start, y=height-30 (where the starting node is)
                             'A', // This means we're gonna build an elliptical arc
                             (start - end) / 2, ',', // Next 2 lines are the coordinates of the inflexion point. Height of this point is proportional with start - end distance
                             (start - end) / 2, 0, 0, ',',
-                            start < end ? 1 : 0, end, ',', this.height - 30
+                            start < end ? 1 : 0, end, ',', this.height - this.margin.top
                         ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
                         .join(' ');
                 })
                 .style("fill", "none")
-                .attr("stroke", this.stroke.color);
+                .attr("stroke", "black")
+
+            // Add the highlighting functionality
+            nodes
+                .on('mouseover', function (d) {
+                    // Highlight the nodes: every node is green except of him
+                    nodes.style('fill', "#B8B8B8")
+                    d3.select(this).style('fill', '#69b3b2')
+                    // Highlight the connections
+                    links
+                        .style('stroke', function (link_d) {
+                            return link_d.source === d.id || link_d.target === d.id ? '#69b3b2' : '#b8b8b8';
+                        })
+                        .style('stroke-width', function (link_d) {
+                            return link_d.source === d.id || link_d.target === d.id ? 4 : 1;
+                        })
+                })
+                .on('mouseout', function (d) {
+                    nodes.style('fill', "#69b3a2")
+                    links
+                        .style('stroke', 'black')
+                        .style('stroke-width', '1')
+                })
+
+            // text hover nodes
+            svg
+                .append("text")
+                .attr("text-anchor", "middle")
+                .style("fill", "#B8B8B8")
+                .style("font-size", "17px")
+                .attr("x", 50)
+                .attr("y", 10)
+                .html("Hover nodes")
         }
-    };
+    }
 }
