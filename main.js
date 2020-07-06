@@ -1,5 +1,4 @@
 var chartOptions = {
-    targetEl : "#arcChart",
     strokeColor: "#000",
     marginTop: 30,
     marginLeft: 20,
@@ -95,5 +94,4 @@ var chartOptions = {
 };
 
 var arcChart = new ArcChart(document.getElementById("arcChart"), chartOptions);
-
 arcChart.render();

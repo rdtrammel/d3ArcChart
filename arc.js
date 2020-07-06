@@ -24,13 +24,14 @@ function ArcChart(targetEl, opts) {
                 .attr("transform",
                     "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-            // Read dummy data
             var data = this.data;
+            //console.log(data);
 
             // List of node names
             var allNodes = this.data.nodes.map(function (d) {
                 return d.name
             });
+            //console.log(allNodes);
 
             // A linear scale to position the nodes on the X axis
             var x = d3.scalePoint()
@@ -46,7 +47,7 @@ function ArcChart(targetEl, opts) {
                 .attr("cx", function (d) {
                     return (x(d.name))
                 })
-                .attr("cy", this.height - 30)
+                .attr("cy", this.height - this.margin.top)
                 .attr("r", 8)
                 .style("fill", "#69b3a2")
 
@@ -56,13 +57,9 @@ function ArcChart(targetEl, opts) {
                 .data(this.data.nodes)
                 .enter()
                 .append("text")
-                .attr("x", function (d) {
-                    return (x(d.name))
-                })
+                .attr("x", function (d) { return (x(d.name)) })
                 .attr("y", this.height - 10)
-                .text(function (d) {
-                    return (d.name)
-                })
+                .text(function (d) { return (d.name) })
                 .style("text-anchor", "middle")
 
             // Add links between nodes. Here is the tricky part.
